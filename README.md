@@ -1,6 +1,6 @@
-# vue-ehcarts
+# vue-manage
 
-> vue+echarts
+> vue+manage
 
 ## Build Setup
 
