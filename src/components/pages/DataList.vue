@@ -139,7 +139,12 @@ export default {
         });
     }
   },
-  mounted() {}
+  mounted() {
+    var self = this;
+    if (localStorage.username == undefined) {
+      self.$router.push("/login");
+    }
+  }
 };
 </script>
 <style scoped>

@@ -2,8 +2,7 @@
   background-color: #242f42;
 }
 
-.login-wrap,
-.register-wrap {
+.login-wrap{
   background: #324157;
 }
 
@@ -24,7 +23,7 @@
 }
 
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   color: #fff;
   width: 100%;

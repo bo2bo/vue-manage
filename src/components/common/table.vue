@@ -1,6 +1,6 @@
 <template>
     <div class="self-table">
-        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
             <el-table-column type="selection" width="40">
             </el-table-column>
             <el-table-column prop="meeting_date" label="日期">

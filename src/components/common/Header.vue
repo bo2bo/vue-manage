@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="logo">
-      <img src="../../../static/img/logo.png">
+      <img src="../../../static/img/logo.png" style="margin-top: 10px;">
     </div>
     <div class="tabbar">
       <el-menu :default-active="onRoutes" class="el-menu-demo" background-color="#242f42" text-color="#fff" unique-opened router mode="horizontal">
@@ -53,8 +53,14 @@ export default {
         },
         {
           // icon: "el-icon-star-on",
-          index: "datalist",
-          title: "数据列表"
+          index: "1",
+          title: "数据管理",
+          subs: [
+            {
+              index: "indexmanage",
+              title: "指标管理"
+            }
+          ]
         },
         {
           // icon: "el-icon-menu",
@@ -110,7 +116,7 @@ export default {
   float: left;
   width: 250px;
   text-align: center;
-  margin-top: 10px;
+  line-height: 0;
 }
 .user-info {
   float: right;

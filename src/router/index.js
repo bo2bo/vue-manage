@@ -20,8 +20,8 @@ export default new Router({
           component: resolve => require(['../components/pages/MeetingList.vue'], resolve)
         },
         {
-          path: '/datalist',
-          component: resolve => require(['../components/pages/DataList.vue'], resolve)
+          path: '/indexmanage',
+          component: resolve => require(['../components/pages/indexManage.vue'], resolve)
         },
         {
           path: '/test3',

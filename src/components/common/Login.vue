@@ -1,23 +1,24 @@
 <template>
-    <div class="login-wrap">
-        <div class="ms-title">CRM系统</div>
-        <div class="ms-login">
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
-                <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="username"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
-                </el-form-item>
-                <div class="login-btn">
-                    <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-                </div>
-            </el-form>
+  <div class="login-wrap">
+    <div class="ms-title">CRM系统</div>
+    <div class="ms-login">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
+        <el-form-item prop="username">
+          <el-input v-model="ruleForm.username" placeholder="username"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+        </el-form-item>
+        <div class="login-btn">
+          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
         </div>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
+import qs from "qs";
 export default {
   data: function() {
     return {
@@ -30,7 +31,8 @@ export default {
           { required: true, message: "请输入用户名", trigger: "blur" }
         ],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }]
-      }
+      },
+      url: "http://192.168.1.62:8080/login"
     };
   },
   methods: {
@@ -38,8 +40,26 @@ export default {
       const self = this;
       self.$refs[formName].validate(valid => {
         if (valid) {
-          localStorage.setItem("ms_username", self.ruleForm.username);
+          localStorage.setItem("username", self.ruleForm.username);
           self.$router.push("/meetinglist");
+          // self.$axios
+          //   .post(
+          //     self.url,
+          //     qs.stringify({
+          //       adminName: self.ruleForm.username,
+          //       adminPassWord: self.ruleForm.password
+          //     })
+          //   )
+          //   .then(function(res) {
+          //     if (res.data.login) {
+          //       localStorage.setItem("username", self.ruleForm.username);
+          //       self.$router.push("/meetinglist");
+          //     }
+          //   })
+          //   .catch(function(err) {
+          //     console.log(err);
+          //     alert("用户名或密码输入错误！");
+          //   });
         } else {
           console.log("error submit!!");
           return false;

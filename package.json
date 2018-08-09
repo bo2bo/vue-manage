@@ -5,7 +5,7 @@
   "author": "bo_oc",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "e2e": "node test/e2e/runner.js",
@@ -18,7 +18,8 @@
     "element-ui": "^2.4.4",
     "jquery": "^3.3.1",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "qs": "6.5.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

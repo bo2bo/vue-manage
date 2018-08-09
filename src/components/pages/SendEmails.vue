@@ -107,12 +107,20 @@ export default {
     };
   },
   methods: {
-    handleSendEmail(){
+    handleSendEmail() {
       var _this = this;
       _this.tableDialog = true;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     }
   },
-  mounted() {}
+  mounted() {
+    var self = this;
+    if (localStorage.username == undefined) {
+      self.$router.push("/login");
+    }
+  }
 };
 </script>
 <style scoped>
