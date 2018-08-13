@@ -34,6 +34,10 @@ export default new Router({
         {
           path: '/test2',
           component: resolve => require(['../components/pages/test2.vue'], resolve)
+        },
+        {
+          path: '/mytest',
+          component: resolve => require(['../components/pages/mytest.vue'], resolve)
         }
       ]
     },

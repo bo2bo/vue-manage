@@ -80,6 +80,10 @@ export default {
               title: "测试三"
             }
           ]
+        },
+        {
+          index: "mytest",
+          title: "测试"
         }
       ]
     };

@@ -1,7 +1,7 @@
 <template>
   <div class="meeting-list">
     <el-button class="successBtn" type="success" @click.native.prevent="handleAdd()">新增会议</el-button>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" height='619'>
       <el-table-column prop="meetingDate" label="日期">
       </el-table-column>
       <el-table-column prop="meetingTitle" label="主题">
@@ -12,15 +12,15 @@
       </el-table-column>
       <el-table-column prop="meetingMeetingStatus" label="状态">
         <template slot-scope="scope">
-          <span v-if="scope.row.meetingMeetingStatus === 0">未开始</span>
-          <span v-else-if="scope.row.meetingMeetingStatus === 1">已开始</span>
-          <span v-else="scope.row.meetingMeetingStatus === 2">已截止</span>
+          <span v-if="scope.row.meetingMeetingStatus === 0 || scope.row.meetingMeetingStatus == '未开始'">未开始</span>
+          <span v-else-if="scope.row.meetingMeetingStatus === 1 || scope.row.meetingMeetingStatus == '已开始'">已开始</span>
+          <span v-else-if="scope.row.meetingMeetingStatus === 2 || scope.row.meetingMeetingStatus == '已截止'">已截止</span>
         </template>
       </el-table-column>
       <el-table-column prop="meetingStatus" label="是否开放报名">
         <template slot-scope="scope">
-          <span v-if="scope.row.meetingStatus === 0">否</span>
-          <span v-else="scope.row.meetingStatus === 1">开放</span>
+          <span v-if="scope.row.meetingStatus === 0 || scope.row.meetingStatus == '否'">否</span>
+          <span v-else-if="scope.row.meetingStatus === 1 || scope.row.meetingStatus == '开放'">开放</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="200">
@@ -30,31 +30,31 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background layout="prev, pager, next" :total="20">
+    <el-pagination background layout="prev, pager, next" :total="total" :page-size="pageSize" :current-page.sync="currentPage" @current-change="handleCurrentChange">
     </el-pagination>
-    <el-dialog v-bind:title="tableDialogTitle" :visible.sync="tableDialog" width="30%" v-on:close="dialogClose">
-      <el-form ref="dialogForm" :model="tableDialogForm">
-        <el-form-item label="会议日期" :label-width="tableDialogFormLabelWidth">
-          <el-date-picker v-model="tableDialogForm.meetingDate" type="datetime" placeholder="选择日期时间" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm">
+    <el-dialog v-bind:title="tableDialogTitle" :visible.sync="tableDialog" width="30%">
+      <el-form ref="dialogForm" :model="tableDialogForm" :rules="tableDialogRules">
+        <el-form-item label="会议日期" :label-width="tableDialogFormLabelWidth" prop="meetingDate">
+          <el-date-picker v-model="tableDialogForm.meetingDate" type="datetime" placeholder="选择日期时间" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="会议主题" :label-width="tableDialogFormLabelWidth">
+        <el-form-item label="会议主题" :label-width="tableDialogFormLabelWidth" prop="meetingTitle">
           <el-input v-model="tableDialogForm.meetingTitle" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="会议内容" :label-width="tableDialogFormLabelWidth">
-          <el-input v-model="tableDialogForm.meetingContent" auto-complete="off"></el-input>
+        <el-form-item label="会议内容" :label-width="tableDialogFormLabelWidth" prop="meetingContent">
+          <el-input type="textarea" v-model="tableDialogForm.meetingContent" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="会议地点" :label-width="tableDialogFormLabelWidth">
-          <el-input v-model="tableDialogForm.meetingLocation" auto-complete="off"></el-input>
+        <el-form-item label="会议地点" :label-width="tableDialogFormLabelWidth" prop="meetingLocation">
+          <el-input type="textarea" v-model="tableDialogForm.meetingLocation" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="会议状态" :label-width="tableDialogFormLabelWidth">
+        <el-form-item label="会议状态" :label-width="tableDialogFormLabelWidth" prop="meetingMeetingStatus">
           <el-select v-model="tableDialogForm.meetingMeetingStatus" placeholder="请选择会议状态">
             <el-option label="未开始" value="未开始"></el-option>
             <el-option label="已开始" value="已开始"></el-option>
             <el-option label="已截止" value="已截止"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否开放报名" :label-width="tableDialogFormLabelWidth">
+        <el-form-item label="是否开放报名" :label-width="tableDialogFormLabelWidth" prop="meetingStatus">
           <el-select v-model="tableDialogForm.meetingStatus" placeholder="是否开放报名">
             <el-option label="开放" value="开放"></el-option>
             <el-option label="否" value="否"></el-option>
@@ -77,8 +77,8 @@ export default {
       url: {
         tableUrl: "http://192.168.1.62:8080/getMeetings",
         addDataUrl: "http://192.168.1.62:8080/addMeeting",
-        editDataUrl: "",
-        deleteDataUrl: ""
+        editDataUrl: "http://192.168.1.62:8080/updateMeeting",
+        deleteDataUrl: "http://192.168.1.62:8080/deleteMeeting"
       },
       tableData: [],
       tableDialog: false,
@@ -91,20 +91,46 @@ export default {
         meetingMeetingStatus: "未开始",
         meetingStatus: "否"
       },
+      tableDialogRules: {
+        meetingDate: [
+          { required: true, message: "请输入会议日期", trigger: "blur" }
+        ],
+        meetingTitle: [
+          { required: true, message: "请输入会议主题", trigger: "blur" }
+        ],
+        meetingContent: [
+          { required: true, message: "请输入会议内容", trigger: "blur" }
+        ],
+        meetingLocation: [
+          { required: true, message: "请输入会议地址", trigger: "blur" }
+        ],
+        meetingMeetingStatus: [
+          { required: true, message: "请选择会议状态", trigger: "blur" }
+        ],
+        meetingStatus: [
+          { required: true, message: "请选择报名状态", trigger: "blur" }
+        ]
+      },
       tableDialogFormLabelWidth: "120px",
-      isAdd: true
+      isAdd: true,
+      pageSize: 10,
+      total: 10,
+      currentPage: 1,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now();
+        }
+      },
+      meetingId: ""
     };
   },
   methods: {
     handleAdd() {
       var self = this;
       self.tableDialogTitle = "新增会议";
+      self.tableDialogForm = {};
       self.tableDialog = true;
       self.isAdd = true;
-    },
-    dialogClose() {
-      var self = this;
-      self.$refs.dialogForm.resetFields();
     },
     handleEdit(index, row) {
       var self = this;
@@ -124,6 +150,7 @@ export default {
       }
       self.tableDialog = true;
       self.isAdd = false;
+      self.meetingId = row.meetingId;
     },
     handleDelete(index, rows) {
       var self = this;
@@ -134,11 +161,26 @@ export default {
           type: "warning"
         })
         .then(() => {
-          self.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-          rows.splice(index, 1);
+          self.$axios
+            .post(
+              self.url.deleteDataUrl,
+              qs.stringify({
+                meetingId: rows[index].meetingId
+              })
+            )
+            .then(response => {
+              if (response.data.status == "200") {
+                self.$message({
+                  type: "success",
+                  message: "删除成功!"
+                });
+                rows.splice(index, 1);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              console.log("删除出错了。。。");
+            });
         })
         .catch(() => {
           self.$message({
@@ -147,19 +189,33 @@ export default {
           });
         });
     },
+    handleCurrentChange(val) {
+      var self = this;
+      self.currentPage = val;
+      self.getTableData({
+        url: self.url.tableUrl,
+        currentPage: self.currentPage,
+        pageSize: self.pageSize
+      });
+    },
     submitData() {
       var self = this;
       self.appendData();
-      self.tableDialog = false;
     },
-    getTableData() {
+    getTableData(param) {
       var self = this;
       self.$axios
-        .get(self.url.tableUrl)
+        .post(
+          param.url,
+          qs.stringify({
+            pageNum: param.currentPage,
+            pageSize: param.pageSize
+          })
+        )
         .then(function(res) {
           if (res.data.status == "200") {
             self.tableData = res.data.body;
-            console.log(res.data.body);
+            self.total = res.data.total;
           } else if (res.data.resultCode == "500") {
             alert("暂时没有数据！");
           }
@@ -175,8 +231,10 @@ export default {
           let operateData = JSON.parse(JSON.stringify(self.tableDialogForm));
           if (operateData.meetingStatus == "否") {
             operateData.meetingStatus = 0;
+            operateData.isFlag = false;
           } else {
             operateData.meetingStatus = 1;
+            operateData.isFlag = true;
           }
           if (operateData.meetingMeetingStatus == "未开始") {
             operateData.meetingMeetingStatus = 0;
@@ -186,31 +244,36 @@ export default {
             operateData.meetingMeetingStatus = 2;
           }
           if (self.isAdd) {
+            operateData.meetingDate = operateData.meetingDate.split(",")[0];
             self.$axios
               .post(self.url.addDataUrl, qs.stringify(operateData))
-              .then(response => {
-                debugger;
-                self.tableDialog = false;
-                self.$message({
-                  message: "添加成功",
-                  type: "success"
-                });
+              .then(res => {
+                if (res.data.status == "200") {
+                  self.tableData = res.data.body;
+                  self.tableDialog = false;
+                  self.$message({
+                    message: "添加成功",
+                    type: "success"
+                  });
+                } else if (res.data.status == "500") {
+                  self.tableDialog = false;
+                  self.$message({
+                    message: "添加会议失败",
+                    type: "danger"
+                  });
+                }
               })
               .catch(err => {
                 console.log(err);
                 console.log("添加出错了。。。");
               });
           } else {
+            operateData.meetingId = self.meetingId;
+            operateData.meetingDate = operateData.meetingDate.split(",")[0];
             self.$axios
-              .post(
-                self.url.updateUrl,
-                qs.stringify({
-                  topicName: operateData.topicName,
-                  topicId: operateData.topicId
-                })
-              )
+              .post(self.url.editDataUrl, qs.stringify(operateData))
               .then(response => {
-                debugger;
+                self.tableData = response.data.body;
                 self.tableDialog = false;
                 self.$message({
                   message: "修改成功",
@@ -233,7 +296,11 @@ export default {
     if (localStorage.username == undefined) {
       self.$router.push("/login");
     }
-    self.getTableData();
+    self.getTableData({
+      url: self.url.tableUrl,
+      currentPage: self.currentPage,
+      pageSize: self.pageSize
+    });
   }
 };
 </script>
