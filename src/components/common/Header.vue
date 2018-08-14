@@ -59,6 +59,10 @@ export default {
             {
               index: "indexmanage",
               title: "指标管理"
+            },
+            {
+              index: "colormanage",
+              title: "颜色管理"
             }
           ]
         },

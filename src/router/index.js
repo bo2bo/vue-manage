@@ -24,6 +24,10 @@ export default new Router({
           component: resolve => require(['../components/pages/indexManage.vue'], resolve)
         },
         {
+          path: '/colormanage',
+          component: resolve => require(['../components/pages/colorManage.vue'], resolve)
+        },
+        {
           path: '/test3',
           component: resolve => require(['../components/pages/test3.vue'], resolve)
         },
