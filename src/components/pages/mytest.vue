@@ -1,57 +1,108 @@
 <template>
-    <self-table :tableData="tableData" :columns="columns" :totalPage="totalPage" @currentChange="currentChange"></self-table>
+  <self-table :tableData="tableData" :columns="columns" :totalPage="totalPage" @currentChange="currentChange" @handleDelete="tableDelete" @handleEdit="tableEdit"></self-table>
 </template>
 <script>
 import SelfTable from "./../common/SelfTable.vue";
-// import vFooter from './../common/Footer.vue';
 export default {
   components: {
     SelfTable
   },
   data() {
     return {
-      columns: [
-        { prop: "title", label: "标题" },
-        { prop: "create_name", label: "发布人" },
-        { prop: "item_name", label: "栏目" },
-        { prop: "create_time", label: "创建时间" },
-        { prop: "weight", label: "权重" },
+      tableData: [
         {
-          prop: "isoriginal",
-          label: "原创",
-          render: function(h, param) {
-            let html = "";
-            if (param.row.isoriginal == "201") {
-              html = "原创";
-            } else {
-              html = "非原创";
-            }
-            return html;
-          }
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
         },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        },
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        },
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        }
+      ],
+      columns: [
+        { prop: "date", label: "日期" },
+        { prop: "name", label: "姓名" },
+        { prop: "address", label: "地址" },
         {
           prop: "",
           label: "操作",
-          render: (h, param) => {
-            const dropDownData = {
+          render: (function() {
+            const operate = {
               label: "操作",
               items: [
                 {
-                  label: "修改",
-                  func: { func: "update", uuid: param.row.uuid }
+                  label: "编辑",
+                  func: "update",
+                  type: "primary"
                 },
-                { label: "删除", func: { func: "del", uuid: param.row.uuid } }
+                {
+                  label: "删除",
+                  func: "delete",
+                  type: "danger"
+                }
               ]
             };
-            // 触发MyDropDown的update和del事件
-            return h(MyDropDown, {
-              props: { dropDownData: dropDownData },
-              on: { update: this.update, del: this.del }
-            });
-          }
+            return operate;
+          })()
         }
-      ]
+      ],
+      totalPage: 12
     };
+  },
+  methods: {
+    currentChange(val) {
+      alert(val);
+    },
+    tableDelete(index, rows) {
+      debugger;
+      alert(index, rows);
+    },
+    tableEdit(index, rows) {
+      debugger;
+      alert(index, rows);
+    }
   }
 };
 </script>
