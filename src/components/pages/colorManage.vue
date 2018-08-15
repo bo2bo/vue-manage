@@ -1,19 +1,19 @@
 <template>
-    <div class="color-manage" id="color-manage">
-        <el-row>
-            <el-col :xs="20" :sm="16" :md="12" :lg="9" :xl="8">
-                <el-select v-model="selectData.value" placeholder="请选择" style="width:30%;" @change="handleIndexChange">
-                    <el-option v-for="item in selectData.options" :key="item.value" :label="item.label" :value="item.id" :disabled="item.disabled">
-                    </el-option>
-                </el-select>
-                <el-button type="primary" @click="search()">搜索</el-button>
-            </el-col>
-        </el-row>
-        <div v-for="item in colorData" :key="item.id" class="block">
-            <span class="demonstration">{{item.industryName}}</span>
-            <el-color-picker v-model="item.colourCode" @change="handleColorChange" :id="item.choiceId"></el-color-picker>
-        </div>
+  <div class="color-manage" id="color-manage">
+    <el-row>
+      <el-col :xs="20" :sm="16" :md="12" :lg="9" :xl="8">
+        <el-select v-model="selectData.value" placeholder="请选择" style="width:30%;" @change="handleIndexChange">
+          <el-option v-for="item in selectData.options" :key="item.value" :label="item.label" :value="item.id" :disabled="item.disabled">
+          </el-option>
+        </el-select>
+        <el-button type="primary" @click="search()">搜索</el-button>
+      </el-col>
+    </el-row>
+    <div v-for="item in colorData" :key="item.id" class="block">
+      <span class="demonstration">{{item.industryName}}</span>
+      <el-color-picker v-model="item.colourCode" @change="handleColorChange" :id="item.choiceId" :popper-class="item.choiceId"></el-color-picker>
     </div>
+  </div>
 </template>
 <script>
 import qs from "qs";
@@ -46,11 +46,24 @@ export default {
       var self = this;
       self.selectData.selectId = val;
     },
-    handleColorChange(val){
-        var self = this;
-        var aa = event.target.getAttribute('id');
-        debugger;
-        console.log(val);
+    handleColorChange(val) {
+      var self = this;
+      var industryId = event.path[2].className.split(" ")[2];
+      self.$axios
+        .post(
+          self.url.updateUrl,
+          qs.stringify({
+            industryId: parseInt(industryId),
+            colourCode: val
+          })
+        )
+        .then(function(res) {
+          debugger;
+          
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
     },
     getData(param) {
       var self = this;
