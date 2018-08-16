@@ -21,9 +21,9 @@ export default {
   data: function() {
     return {
       url: {
-        listUrl: "http://192.168.1.5:8768/colourConfig/findColourDropDownList",
-        colorUrl: "http://192.168.1.5:8768/colourConfig/findColourListByType",
-        updateUrl: "http://192.168.1.5:8768/colourConfig/updateColourInfo"
+        listUrl: this.GLOBAL.url2 + "colourConfig/findColourDropDownList",
+        colorUrl: this.GLOBAL.url2 + "colourConfig/findColourListByType",
+        updateUrl: this.GLOBAL.url2 + "colourConfig/updateColourInfo"
       },
       selectData: {
         options: [],
@@ -48,18 +48,31 @@ export default {
     },
     handleColorChange(val) {
       var self = this;
-      var industryId = event.path[2].className.split(" ")[2];
+      var choiceId;
+      event.path.forEach(function(v) {
+        if (
+          v.className != undefined &&
+          v.className != "" &&
+          v.className.indexOf("el-color-picker__panel") != -1
+        ) {
+          choiceId = v.className.split(" ")[2];
+        }
+      });
       self.$axios
         .post(
           self.url.updateUrl,
           qs.stringify({
-            industryId: parseInt(industryId),
+            choiceId: parseInt(choiceId),
             colourCode: val
           })
         )
         .then(function(res) {
-          debugger;
-          
+          if (res.data.resultCode == "200") {
+            self.$message({
+              message: "修改成功",
+              type: "success"
+            });
+          }
         })
         .catch(function(err) {
           console.log(err);

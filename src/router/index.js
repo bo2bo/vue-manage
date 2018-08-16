@@ -28,6 +28,10 @@ export default new Router({
           component: resolve => require(['../components/pages/colorManage.vue'], resolve)
         },
         {
+          path: '/modulemanage',
+          component: resolve => require(['../components/pages/moduleManage.vue'], resolve)
+        },
+        {
           path: '/test3',
           component: resolve => require(['../components/pages/test3.vue'], resolve)
         },

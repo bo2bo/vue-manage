@@ -73,13 +73,13 @@ export default {
     return {
       url: {
         allIndexDataUrl:
-          "http://192.168.1.5:8768/indexcListCnfig/findIndexList",
+          this.GLOBAL.url2 + "indexcListCnfig/findIndexList",
         chooseIndexDataUrl:
-          "http://192.168.1.5:8768/indexcListCnfig/findIndexListInfoForChoiced",
+          this.GLOBAL.url2 + "indexcListCnfig/findIndexListInfoForChoiced",
         removeToRightUrl:
-          "http://192.168.1.5:8768/indexcListCnfig/modifyIndexListInfoChoiced",
+          this.GLOBAL.url2 + "indexcListCnfig/modifyIndexListInfoChoiced",
         removeToLeftUrl:
-          "http://192.168.1.5:8768/indexcListCnfig/modifyIndexListChoicedInfoToDelete"
+          this.GLOBAL.url2 + "indexcListCnfig/modifyIndexListChoicedInfoToDelete"
       },
       pageSize: 10,
       // 所有指标

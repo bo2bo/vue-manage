@@ -1,12 +1,13 @@
 <template>
   <div class="send-emails">
     <el-button class="successBtn" type="success" @click.native.prevent="handleSendEmail()">发送邮件</el-button>
-    <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" height='619'>
+    <el-table :data="tableData" border style="width: 100%" ref="multipleSelection" @selection-change="handleSelectionChange" height='619'>
       <el-table-column type="selection" width="40">
-        <template slot-scope="scope">
-          <el-checkbox v-if="scope.row.userInvited === 0 || scope.row.userInvited == '否'"></el-checkbox>          
+        <!-- <template slot-scope="scope">
+          <el-checkbox v-if="scope.row.userInvited === 0 || scope.row.userInvited == '否'"></el-checkbox>
           <el-checkbox disabled v-else-if="scope.row.userInvited === 1 || scope.row.userInvited == '是'"></el-checkbox>
-        </template>
+          <el-checkbox v-else></el-checkbox>
+        </template> -->
       </el-table-column>
       <el-table-column prop="userName" label="姓名">
       </el-table-column>
@@ -56,8 +57,8 @@ export default {
   data: function() {
     return {
       url: {
-        tableUrl: "http://192.168.1.62:8080/getUserInfo",
-        sendEmailUrl: "http://192.168.1.62:8080/send"
+        tableUrl: this.GLOBAL.url + "getUserInfo",
+        sendEmailUrl: this.GLOBAL.url + "send"
       },
       tableData: [],
       multipleSelection: [],
@@ -94,7 +95,8 @@ export default {
       _this.tableDialog = true;
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      var self = this;
+      self.multipleSelection = val;
     },
     handleCurrentChange(val) {
       var self = this;
@@ -137,7 +139,6 @@ export default {
             operateData.userId.push(v.userId);
           });
           operateData.userId = operateData.userId.join(",");
-          debugger;
           self.$axios
             .post(self.url.sendEmailUrl, qs.stringify(operateData))
             .then(res => {

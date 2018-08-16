@@ -75,10 +75,10 @@ export default {
   data: function() {
     return {
       url: {
-        tableUrl: "http://192.168.1.62:8080/getMeetings",
-        addDataUrl: "http://192.168.1.62:8080/addMeeting",
-        editDataUrl: "http://192.168.1.62:8080/updateMeeting",
-        deleteDataUrl: "http://192.168.1.62:8080/deleteMeeting"
+        tableUrl: this.GLOBAL.url + "getMeetings",
+        addDataUrl: this.GLOBAL.url + "addMeeting",
+        editDataUrl: this.GLOBAL.url + "updateMeeting",
+        deleteDataUrl: this.GLOBAL.url + "deleteMeeting"
       },
       tableData: [],
       tableDialog: false,
@@ -170,11 +170,16 @@ export default {
             )
             .then(response => {
               if (response.data.status == "200") {
-                self.$message({
-                  type: "success",
-                  message: "删除成功!"
+                self.getTableData({
+                  url: self.url.tableUrl,
+                  currentPage: self.currentPage,
+                  pageSize: self.pageSize
                 });
-                rows.splice(index, 1);
+                // self.$message({
+                //   type: "success",
+                //   message: "删除成功!"
+                // });
+                // rows.splice(index, 1);
               }
             })
             .catch(err => {
@@ -249,7 +254,11 @@ export default {
               .post(self.url.addDataUrl, qs.stringify(operateData))
               .then(res => {
                 if (res.data.status == "200") {
-                  self.tableData = res.data.body;
+                  self.getTableData({
+                    url: self.url.tableUrl,
+                    currentPage: self.currentPage,
+                    pageSize: self.pageSize
+                  });
                   self.tableDialog = false;
                   self.$message({
                     message: "添加成功",
@@ -273,12 +282,18 @@ export default {
             self.$axios
               .post(self.url.editDataUrl, qs.stringify(operateData))
               .then(response => {
-                self.tableData = response.data.body;
-                self.tableDialog = false;
-                self.$message({
-                  message: "修改成功",
-                  type: "success"
-                });
+                if (response.data.status == "200") {
+                  self.getTableData({
+                    url: self.url.tableUrl,
+                    currentPage: self.currentPage,
+                    pageSize: self.pageSize
+                  });
+                  self.tableDialog = false;
+                  self.$message({
+                    message: "修改成功",
+                    type: "success"
+                  });
+                }
               })
               .catch(err => {
                 console.log(err);

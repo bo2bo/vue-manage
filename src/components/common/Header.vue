@@ -52,7 +52,6 @@ export default {
           title: "发送邮件"
         },
         {
-          // icon: "el-icon-star-on",
           index: "1",
           title: "数据管理",
           subs: [
@@ -63,11 +62,14 @@ export default {
             {
               index: "colormanage",
               title: "颜色管理"
+            },
+            {
+              index: "modulemanage",
+              title: "模块管理"
             }
           ]
         },
         {
-          // icon: "el-icon-menu",
           index: "2",
           title: "二级菜单",
           subs: [
@@ -94,7 +96,7 @@ export default {
   },
   computed: {
     username() {
-      let username = localStorage.getItem("ms_username");
+      let username = localStorage.getItem("username");
       return username ? username : this.name;
     },
     onRoutes() {
@@ -104,7 +106,7 @@ export default {
   methods: {
     handleCommand(command) {
       if (command == "loginout") {
-        localStorage.removeItem("ms_username");
+        localStorage.removeItem("username");
         this.$router.push("/login");
       }
     }

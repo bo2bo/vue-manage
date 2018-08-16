@@ -32,7 +32,7 @@ export default {
         ],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }]
       },
-      url: "http://192.168.1.62:8080/login"
+      url: this.GLOBAL.url + "login"
     };
   },
   methods: {
@@ -40,26 +40,27 @@ export default {
       const self = this;
       self.$refs[formName].validate(valid => {
         if (valid) {
-          localStorage.setItem("username", self.ruleForm.username);
-          self.$router.push("/meetinglist");
-          // self.$axios
-          //   .post(
-          //     self.url,
-          //     qs.stringify({
-          //       adminName: self.ruleForm.username,
-          //       adminPassWord: self.ruleForm.password
-          //     })
-          //   )
-          //   .then(function(res) {
-          //     if (res.data.login) {
-          //       localStorage.setItem("username", self.ruleForm.username);
-          //       self.$router.push("/meetinglist");
-          //     }
-          //   })
-          //   .catch(function(err) {
-          //     console.log(err);
-          //     alert("用户名或密码输入错误！");
-          //   });
+          // localStorage.setItem("username", self.ruleForm.username);
+          // self.$router.push("/meetinglist");
+          self.$axios
+            .post(
+              self.url,
+              qs.stringify({
+                adminName: self.ruleForm.username,
+                adminPassWord: self.ruleForm.password
+              })
+            )
+            .then(function(res) {
+              if (res.data.login) {
+                localStorage.setItem("username", self.ruleForm.username);
+                self.$router.push("/meetinglist");
+              } else {
+                alert("用户名或密码输入错误！");
+              }
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
         } else {
           console.log("error submit!!");
           return false;
