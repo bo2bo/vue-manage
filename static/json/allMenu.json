@@ -1,0 +1,50 @@
+[
+    {
+      "index": "meetinglist",
+      "title": "会议列表"
+    },
+    {
+      "index": "sendemails",
+      "title": "发送邮件"
+    },
+    {
+      "index": "1",
+      "title": "数据管理",
+      "subs": [
+        {
+          "index": "indexmanage",
+          "title": "指标管理"
+        },
+        {
+          "index": "colormanage",
+          "title": "颜色管理"
+        },
+        {
+          "index": "modulemanage",
+          "title": "模块管理"
+        }
+      ]
+    },
+    {
+      "index": "2",
+      "title": "二级菜单",
+      "subs": [
+        {
+          "index": "test1",
+          "title": "测试一"
+        },
+        {
+          "index": "test2",
+          "title": "测试二"
+        },
+        {
+          "index": "test3",
+          "title": "测试三"
+        }
+      ]
+    },
+    {
+      "index": "mytest",
+      "title": "测试"
+    }
+  ]

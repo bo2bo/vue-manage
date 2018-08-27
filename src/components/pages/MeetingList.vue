@@ -60,10 +60,15 @@
             <el-option label="否" value="否"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="会议议程" :label-width="tableDialogFormLabelWidth" prop="invitationImg">
+          <el-upload ref="upload" action="" :file-list="fileList" :auto-upload="false" :limit="1" :on-exceed="onExceeds" :before-remove="beforeRemove" :on-change="onChange">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          </el-upload>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="tableDialog = false">取 消</el-button>
-        <el-button type="primary" @click.native.prevent="submitData()">确 定</el-button>
+        <el-button type="primary" @click.native.prevent="submitUpload()" :disabled="isShow">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -121,21 +126,130 @@ export default {
           return time.getTime() < Date.now();
         }
       },
-      meetingId: ""
+      meetingId: "",
+      fileList: [],
+      isShow: false
     };
   },
   methods: {
+    submitUpload() {
+      var self = this;
+      let fd = new FormData();
+      fd.append("files", self.fileList[0].raw);
+      self.appendData({
+        fd: fd
+      });
+    },
+    onChange(file, fileList) {
+      var self = this;
+      self.isShow = false;
+      self.fileList = fileList;
+    },
+    beforeRemove(file, fileList) {
+      var self = this;
+      self.isShow = true;
+      alert("请上传新文件！");
+    },
+    appendData(param) {
+      var self = this;
+      let operateData = JSON.parse(JSON.stringify(self.tableDialogForm));
+      if (operateData.meetingStatus == "否") {
+        operateData.meetingStatus = 0;
+        operateData.isFlag = false;
+      } else {
+        operateData.meetingStatus = 1;
+        operateData.isFlag = true;
+      }
+      if (operateData.meetingMeetingStatus == "未开始") {
+        operateData.meetingMeetingStatus = 0;
+      } else if (operateData.meetingMeetingStatus == "已开始") {
+        operateData.meetingMeetingStatus = 1;
+      } else {
+        operateData.meetingMeetingStatus = 2;
+      }
+      param.fd.append("isFlag", operateData.isFlag);
+      param.fd.append("meetingContent", operateData.meetingContent);
+      param.fd.append("meetingLocation", operateData.meetingLocation);
+      param.fd.append("meetingMeetingStatus", operateData.meetingMeetingStatus);
+      param.fd.append("meetingStatus", operateData.meetingStatus);
+      param.fd.append("meetingTitle", operateData.meetingTitle);
+      if (self.isAdd) {
+        param.fd.append("meetingDate", operateData.meetingDate);
+        self.$axios
+          .post(self.url.addDataUrl, param.fd)
+          .then(res => {
+            if (res.data.status == "200") {
+              self.getTableData({
+                url: self.url.tableUrl,
+                currentPage: self.currentPage,
+                pageSize: self.pageSize
+              });
+              self.tableDialog = false;
+              self.$message({
+                message: "添加成功",
+                type: "success"
+              });
+            } else if (res.data.status == "500") {
+              self.tableDialog = false;
+              self.$message({
+                message: "添加会议失败",
+                type: "danger"
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            console.log("添加出错了。。。");
+          });
+      } else {
+        operateData.meetingId = self.meetingId;
+        operateData.meetingDate = operateData.meetingDate.split(",")[0];
+        param.fd.append("meetingId", operateData.meetingId);
+        param.fd.append("meetingDate", operateData.meetingDate);
+        self.$axios
+          .post(self.url.editDataUrl, param.fd)
+          .then(response => {
+            if (response.data.status == "200") {
+              self.getTableData({
+                url: self.url.tableUrl,
+                currentPage: self.currentPage,
+                pageSize: self.pageSize
+              });
+              self.tableDialog = false;
+              self.$message({
+                message: "修改成功",
+                type: "success"
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            console.log("修改出错了。。。");
+          });
+      }
+    },
+    onExceeds(files, fileList) {
+      alert("只能上传一张图片，请删除后再上传！");
+    },
     handleAdd() {
       var self = this;
       self.tableDialogTitle = "新增会议";
       self.tableDialogForm = {};
       self.tableDialog = true;
       self.isAdd = true;
+      self.fileList = [];
+      self.isShow = true;
     },
     handleEdit(index, row) {
       var self = this;
       self.tableDialogTitle = "编辑会议";
       self.tableDialogForm = row;
+      self.fileList = [
+        {
+          name: row.meetingUrl.split("/")[row.meetingUrl.split("/").length - 1],
+          url: row.meetingUrl
+        }
+      ];
       if (self.tableDialogForm.meetingStatus == 0) {
         self.tableDialogForm.meetingStatus = "否";
       } else {
@@ -175,11 +289,6 @@ export default {
                   currentPage: self.currentPage,
                   pageSize: self.pageSize
                 });
-                // self.$message({
-                //   type: "success",
-                //   message: "删除成功!"
-                // });
-                // rows.splice(index, 1);
               }
             })
             .catch(err => {
@@ -203,10 +312,6 @@ export default {
         pageSize: self.pageSize
       });
     },
-    submitData() {
-      var self = this;
-      self.appendData();
-    },
     getTableData(param) {
       var self = this;
       self.$axios
@@ -228,82 +333,6 @@ export default {
         .catch(function(err) {
           console.log(err);
         });
-    },
-    appendData() {
-      var self = this;
-      self.$refs.dialogForm.validate(valid => {
-        if (valid) {
-          let operateData = JSON.parse(JSON.stringify(self.tableDialogForm));
-          if (operateData.meetingStatus == "否") {
-            operateData.meetingStatus = 0;
-            operateData.isFlag = false;
-          } else {
-            operateData.meetingStatus = 1;
-            operateData.isFlag = true;
-          }
-          if (operateData.meetingMeetingStatus == "未开始") {
-            operateData.meetingMeetingStatus = 0;
-          } else if (operateData.meetingMeetingStatus == "已开始") {
-            operateData.meetingMeetingStatus = 1;
-          } else {
-            operateData.meetingMeetingStatus = 2;
-          }
-          if (self.isAdd) {
-            operateData.meetingDate = operateData.meetingDate.split(",")[0];
-            self.$axios
-              .post(self.url.addDataUrl, qs.stringify(operateData))
-              .then(res => {
-                if (res.data.status == "200") {
-                  self.getTableData({
-                    url: self.url.tableUrl,
-                    currentPage: self.currentPage,
-                    pageSize: self.pageSize
-                  });
-                  self.tableDialog = false;
-                  self.$message({
-                    message: "添加成功",
-                    type: "success"
-                  });
-                } else if (res.data.status == "500") {
-                  self.tableDialog = false;
-                  self.$message({
-                    message: "添加会议失败",
-                    type: "danger"
-                  });
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                console.log("添加出错了。。。");
-              });
-          } else {
-            operateData.meetingId = self.meetingId;
-            operateData.meetingDate = operateData.meetingDate.split(",")[0];
-            self.$axios
-              .post(self.url.editDataUrl, qs.stringify(operateData))
-              .then(response => {
-                if (response.data.status == "200") {
-                  self.getTableData({
-                    url: self.url.tableUrl,
-                    currentPage: self.currentPage,
-                    pageSize: self.pageSize
-                  });
-                  self.tableDialog = false;
-                  self.$message({
-                    message: "修改成功",
-                    type: "success"
-                  });
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                console.log("修改出错了。。。");
-              });
-          }
-        } else {
-          return false;
-        }
-      });
     }
   },
   mounted() {

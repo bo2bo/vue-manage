@@ -40,8 +40,6 @@ export default {
       const self = this;
       self.$refs[formName].validate(valid => {
         if (valid) {
-          // localStorage.setItem("username", self.ruleForm.username);
-          // self.$router.push("/meetinglist");
           self.$axios
             .post(
               self.url,

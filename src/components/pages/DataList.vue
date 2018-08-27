@@ -141,9 +141,9 @@ export default {
   },
   mounted() {
     var self = this;
-    if (localStorage.username == undefined) {
-      self.$router.push("/login");
-    }
+    // if (localStorage.username == undefined) {
+    //   self.$router.push("/login");
+    // }
   }
 };
 </script>

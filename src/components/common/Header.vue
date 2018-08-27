@@ -40,58 +40,7 @@ export default {
   data() {
     return {
       name: "bo_oc",
-      items: [
-        {
-          // icon: "el-icon-document",
-          index: "meetinglist",
-          title: "会议列表"
-        },
-        {
-          // icon: "el-icon-star-on",
-          index: "sendemails",
-          title: "发送邮件"
-        },
-        {
-          index: "1",
-          title: "数据管理",
-          subs: [
-            {
-              index: "indexmanage",
-              title: "指标管理"
-            },
-            {
-              index: "colormanage",
-              title: "颜色管理"
-            },
-            {
-              index: "modulemanage",
-              title: "模块管理"
-            }
-          ]
-        },
-        {
-          index: "2",
-          title: "二级菜单",
-          subs: [
-            {
-              index: "test1",
-              title: "测试一"
-            },
-            {
-              index: "test2",
-              title: "测试二"
-            },
-            {
-              index: "test3",
-              title: "测试三"
-            }
-          ]
-        },
-        {
-          index: "mytest",
-          title: "测试"
-        }
-      ]
+      items: []
     };
   },
   computed: {
@@ -109,6 +58,29 @@ export default {
         localStorage.removeItem("username");
         this.$router.push("/login");
       }
+    },
+    getMenu(param) {
+      var self = this;
+      self.$axios
+        .get(param.url)
+        .then(function(res) {
+          self.items = res.data;
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    }
+  },
+  mounted() {
+    var self = this;
+    if (self.username == "zq") {
+      self.getMenu({
+        url: "./static/json/partMenu.json"
+      });
+    } else {
+      self.getMenu({
+        url: "./static/json/allMenu.json"
+      });
     }
   }
 };
