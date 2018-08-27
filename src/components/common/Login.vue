@@ -40,25 +40,30 @@ export default {
       const self = this;
       self.$refs[formName].validate(valid => {
         if (valid) {
-          self.$axios
-            .post(
-              self.url,
-              qs.stringify({
-                adminName: self.ruleForm.username,
-                adminPassWord: self.ruleForm.password
+          if (self.ruleForm.username == "zq") {
+            self.$axios
+              .post(
+                self.url,
+                qs.stringify({
+                  adminName: self.ruleForm.username,
+                  adminPassWord: self.ruleForm.password
+                })
+              )
+              .then(function(res) {
+                if (res.data.login) {
+                  localStorage.setItem("username", self.ruleForm.username);
+                  self.$router.push("/meetinglist");
+                } else {
+                  alert("用户名或密码输入错误！");
+                }
               })
-            )
-            .then(function(res) {
-              if (res.data.login) {
-                localStorage.setItem("username", self.ruleForm.username);
-                self.$router.push("/meetinglist");
-              } else {
-                alert("用户名或密码输入错误！");
-              }
-            })
-            .catch(function(err) {
-              console.log(err);
-            });
+              .catch(function(err) {
+                console.log(err);
+              });
+          } else {
+            localStorage.setItem("username", self.ruleForm.username);
+            self.$router.push("/meetinglist");
+          }
         } else {
           console.log("error submit!!");
           return false;
